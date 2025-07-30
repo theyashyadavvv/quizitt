@@ -1,3 +1,4 @@
+import 'package:ecommerce/features/home/pages/tabs/HomeTab.dart';
 import 'package:flutter/material.dart';
 import 'core/theme.dart';
 import 'features/auth/presentation/pages/onboarding_page.dart';

@@ -1,5 +1,5 @@
 import 'tabs/generate_tab.dart';
-import 'tabs/login_tab.dart';
+import 'tabs/HomeTab.dart';
 import 'tabs/material_tab.dart';
 import 'tabs/Profile/profile_tab.dart';
 import 'tabs/quizzybot_tab.dart';
@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const LoginTab(),
+    HomeTab(),
     GenerateQuizScreen(),
     const MaterialTab(),
     const ShopTab(),
