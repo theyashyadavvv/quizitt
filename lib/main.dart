@@ -46,9 +46,11 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 7), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const OnboardingPage()),
-      );
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const OnboardingPage()),
+        );
+      }
     });
   }
 
@@ -60,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen> {
         width: size.width * 0.8,
         height: size.height * 0.5,
         child: GifView.asset(
-          'assets/svg/splash.gif',
+          'assets/svg/splash_2.gif',
           fit: BoxFit.contain,
         ),
       ),

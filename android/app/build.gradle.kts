@@ -8,7 +8,8 @@ plugins {
 android {
     namespace = "com.example.quizitt"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // CHANGE THIS LINE: Set the NDK version explicitly to fix the plugin conflict.
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

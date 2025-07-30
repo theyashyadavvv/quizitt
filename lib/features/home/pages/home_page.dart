@@ -1,9 +1,9 @@
-import 'package:ecommerce/features/home/pages/tabs/generate_tab.dart';
-import 'package:ecommerce/features/home/pages/tabs/login_tab.dart';
-import 'package:ecommerce/features/home/pages/tabs/material_tab.dart';
-import 'package:ecommerce/features/home/pages/tabs/Profile/profile_tab.dart';
-import 'package:ecommerce/features/home/pages/tabs/quizzybot_tab.dart';
-import 'package:ecommerce/features/home/pages/tabs/shop_tab.dart';
+import 'tabs/generate_tab.dart';
+import 'tabs/login_tab.dart';
+import 'tabs/material_tab.dart';
+import 'tabs/Profile/profile_tab.dart';
+import 'tabs/quizzybot_tab.dart';
+import 'tabs/shop_tab.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,13 +16,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [
-    LoginTab(),
-    ShopTab(),
-    GenerateTab(),
-    MaterialTab(),
-    QuizzyBotTab(),
-    ProfileTab(),
+  final List<Widget> _pages = [
+    const LoginTab(),
+    GenerateQuizScreen(),
+    const MaterialTab(),
+    const ShopTab(),
+    const QuizzyBotTab(),
+    const ProfileTab(),
   ];
 
   @override
@@ -32,12 +32,6 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           Expanded(child: _pages[_selectedIndex]),
-
-          // Divider line
-          Container(
-            height: 1,
-            color: Colors.grey.shade700,
-          ),
 
           // Bottom navigation bar
           BottomNavigationBar(
@@ -51,50 +45,134 @@ class _HomePageState extends State<HomePage> {
             },
             items: [
               BottomNavigationBarItem(
-                icon: Image.asset(
-                  'assets/icons/login.png',
-                  width: 32,
-                  height: 32,
+                icon: Column(
+                  children: [
+                    Image.asset(
+                      'assets/icons/login.png',
+                      width: 32,
+                      height: 32,
+                    ),
+                    if (_selectedIndex == 0)
+                      Container(
+                        margin: const EdgeInsets.only(top: 4),
+                        height: 4,
+                        width: 24,
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                  ],
                 ),
                 label: 'Login',
               ),
               BottomNavigationBarItem(
-                icon: Image.asset(
-                  'assets/icons/generate.png',
-                  width: 32,
-                  height: 32,
+                icon: Column(
+                  children: [
+                    Image.asset(
+                      'assets/icons/generate.png',
+                      width: 32,
+                      height: 32,
+                    ),
+                    if (_selectedIndex == 1)
+                      Container(
+                        margin: const EdgeInsets.only(top: 4),
+                        height: 4,
+                        width: 24,
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                  ],
                 ),
                 label: 'Generate',
               ),
               BottomNavigationBarItem(
-                icon: Image.asset(
-                  'assets/icons/material.png',
-                  width: 32,
-                  height: 32,
+                icon: Column(
+                  children: [
+                    Image.asset(
+                      'assets/icons/material.png',
+                      width: 32,
+                      height: 32,
+                    ),
+                    if (_selectedIndex == 2)
+                      Container(
+                        margin: const EdgeInsets.only(top: 4),
+                        height: 4,
+                        width: 24,
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                  ],
                 ),
                 label: 'Material',
               ),
               BottomNavigationBarItem(
-                icon: Image.asset(
-                  'assets/icons/shop.png',
-                  width: 32,
-                  height: 32,
+                icon: Column(
+                  children: [
+                    Image.asset(
+                      'assets/icons/shop.png',
+                      width: 32,
+                      height: 32,
+                    ),
+                    if (_selectedIndex == 3)
+                      Container(
+                        margin: const EdgeInsets.only(top: 4),
+                        height: 4,
+                        width: 24,
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                  ],
                 ),
                 label: 'Shop',
               ),
               BottomNavigationBarItem(
-                icon: Image.asset(
-                  'assets/icons/quizzybot.png',
-                  width: 32,
-                  height: 32,
+                icon: Column(
+                  children: [
+                    Image.asset(
+                      'assets/icons/quizzybot.png',
+                      width: 32,
+                      height: 32,
+                    ),
+                    if (_selectedIndex == 4)
+                      Container(
+                        margin: const EdgeInsets.only(top: 4),
+                        height: 4,
+                        width: 24,
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                  ],
                 ),
                 label: 'QuizzyBot',
               ),
               BottomNavigationBarItem(
-                icon: Image.asset(
-                  'assets/icons/profile.png',
-                  width: 32,
-                  height: 32,
+                icon: Column(
+                  children: [
+                    Image.asset(
+                      'assets/icons/profile.png',
+                      width: 32,
+                      height: 32,
+                    ),
+                    if (_selectedIndex == 5)
+                      Container(
+                        margin: const EdgeInsets.only(top: 4),
+                        height: 4,
+                        width: 24,
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                  ],
                 ),
                 label: 'Profile',
               ),

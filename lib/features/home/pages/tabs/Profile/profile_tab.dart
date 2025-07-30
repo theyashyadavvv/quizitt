@@ -1,7 +1,38 @@
-import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+
+// PasswordScreen widget matching screenshot
+
+// PasswordScreen widget matching screenshot
+
+// Responsive stat item widget for header
+class StatItem extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String label;
+  final bool isMobile;
+  const StatItem({required this.icon, required this.color, required this.label, required this.isMobile});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Icon(icon, color: color, size: isMobile ? 22 : 28),
+        Container(
+          margin: const EdgeInsets.only(top: 4),
+          padding: EdgeInsets.symmetric(horizontal: isMobile ? 8 : 12, vertical: isMobile ? 2 : 4),
+          decoration: BoxDecoration(
+            color: Colors.white10,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(label, style: TextStyle(color: Colors.white, fontSize: isMobile ? 12 : 14)),
+        ),
+      ],
+    );
+  }
+
+}
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
@@ -11,14 +42,14 @@ class ProfileTab extends StatefulWidget {
 }
 
 class _ProfileTabState extends State<ProfileTab> {
-  int _selectedSection = 0; // 0: Post, 1: Calendar, 2: Saved
-  int _savedSection = -1; // -1: grid, 0: Notes, 1: Videos, 2: AR
+  int _selectedSection = 0;
+  int _savedSection = -1;
   File? _profileImage;
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
+    if (pickedFile != null && mounted) {
       setState(() {
         _profileImage = File(pickedFile.path);
       });
@@ -28,412 +59,466 @@ class _ProfileTabState extends State<ProfileTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF23243A),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF23243A),
-        elevation: 0,
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white),
-            onPressed: () => Scaffold.of(context).openDrawer(),
+      backgroundColor: const Color(0xFF0C1B33),
+      drawer: _buildDrawer(context),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildProfileHeader(),
+              const SizedBox(height: 20),
+              _buildSectionTabs(),
+              const SizedBox(height: 20),
+              _buildSectionContent(),
+            ],
           ),
         ),
-        actions: [
-          // You can add profile actions here if needed
-        ],
       ),
-      drawer: Drawer(
-        backgroundColor: const Color(0xFF23243A),
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(color: Color(0xFF23243A)),
-              child: Column(
+    );
+  }
+
+  Widget _buildProfileHeader() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isMobile = constraints.maxWidth < 500;
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: isMobile ? 12 : 20, vertical: isMobile ? 12 : 20),
+          decoration: BoxDecoration(
+            color: const Color(0xFF23243A),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: [
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GestureDetector(
                     onTap: _pickImage,
                     child: CircleAvatar(
-                      radius: 32,
-                      backgroundColor: Colors.white24,
+                      radius: isMobile ? 28 : 36,
+                      backgroundColor: Colors.white10,
                       backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
                       child: _profileImage == null
-                          ? const Icon(Icons.person, size: 40, color: Colors.white38)
+                          ? Icon(Icons.person, size: isMobile ? 28 : 36, color: Colors.white38)
                           : null,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text('Username', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
-                  const SizedBox(height: 4),
-                  const Text('user@email.com', style: TextStyle(color: Colors.white70, fontSize: 14)),
-                ],
-              ),
-            ),
-            // Settings/Options panel in Drawer
-            _SettingsOptionsPanel(),
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Profile section
-              Row(
-                children: [
-                  Stack(
-                    children: [
-                      GestureDetector(
-                        onTap: _pickImage,
-                        child: CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.white24,
-                          backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                          child: _profileImage == null
-                              ? const Icon(Icons.person, size: 60, color: Colors.white38)
-                              : null,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: CircleAvatar(
-                          radius: 14,
-                          backgroundColor: Colors.blue.shade200,
-                          child: const Icon(Icons.shield, size: 16, color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: isMobile ? 8 : 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Username', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-                        const SizedBox(height: 8),
-                        Row(
+                        Text('Username', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: isMobile ? 15 : 18)),
+                        SizedBox(height: isMobile ? 2 : 4),
+                        Wrap(
+                          spacing: isMobile ? 8 : 12,
                           children: [
-                            _StatItem(label: 'Post', value: '8'),
-                            _StatItem(label: 'Followers', value: '20'),
-                            _StatItem(label: 'Following', value: '20'),
+                            Text('8 ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: isMobile ? 13 : 15)),
+                            Text('Post', style: TextStyle(color: Colors.white70, fontSize: isMobile ? 13 : 15)),
+                            Text('20 ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: isMobile ? 13 : 15)),
+                            Text('Followers', style: TextStyle(color: Colors.white70, fontSize: isMobile ? 13 : 15)),
+                            Text('20 ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: isMobile ? 13 : 15)),
+                            Text('Following', style: TextStyle(color: Colors.white70, fontSize: isMobile ? 13 : 15)),
                           ],
                         ),
                       ],
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.verified, color: Colors.white, size: 16),
-                        SizedBox(width: 4),
-                        Text('JEE', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Builder(
+                        builder: (context) => IconButton(
+                          icon: const Icon(Icons.menu, color: Colors.white),
+                          onPressed: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                        ),
+                      ),
+                      SizedBox(height: isMobile ? 4 : 8),
+                      PopupMenuButton<String>(
+                        offset: const Offset(0, 40),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            value: 'JEE',
+                            child: Row(
+                              children: const [
+                                Icon(Icons.verified, color: Colors.green, size: 18),
+                                SizedBox(width: 4),
+                                Text('JEE', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'NEET',
+                            child: Row(
+                              children: const [
+                                Icon(Icons.verified, color: Colors.purple, size: 18),
+                                SizedBox(width: 4),
+                                Text('NEET', style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                          ),
+                        ],
+                        onSelected: (value) {
+                          // TODO: handle selection
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.verified, color: Colors.green, size: 18),
+                              const SizedBox(width: 4),
+                              Text('JEE', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                              const Icon(Icons.arrow_drop_down, color: Colors.green),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              // Badges row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              SizedBox(height: isMobile ? 10 : 16),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: isMobile ? 12 : 24,
+                runSpacing: 8,
                 children: [
-                  _BadgeItem(icon: Icons.star, label: '1 Day\nDrip', color: Colors.white),
-                  _BadgeItem(icon: Icons.diamond, label: '20 gems', color: Colors.greenAccent),
-                  _BadgeItem(icon: Icons.bar_chart, label: '1 Quizzes', color: Colors.purpleAccent),
+                  StatItem(icon: Icons.star, color: Colors.amber, label: '1 Day Drip', isMobile: isMobile),
+                  StatItem(icon: Icons.diamond, color: Colors.greenAccent, label: '20 gems', isMobile: isMobile),
+                  StatItem(icon: Icons.bar_chart, color: Colors.purpleAccent, label: '1 Quizzes', isMobile: isMobile),
                 ],
               ),
-              const SizedBox(height: 16),
-              // Section buttons
+            ],
+          ),
+        );
+      },
+    );
+  }
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      backgroundColor: const Color(0xFF23243A),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: ListView(
+            children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _ProfileButton(
-                    label: 'Post',
-                    selected: _selectedSection == 0,
-                    onTap: () => setState(() { _selectedSection = 0; _savedSection = -1; }),
-                  ),
-                  _ProfileButton(
-                    label: 'Calendar',
-                    selected: _selectedSection == 1,
-                    onTap: () => setState(() { _selectedSection = 1; _savedSection = -1; }),
-                  ),
-                  _ProfileButton(
-                    label: 'Saved',
-                    selected: _selectedSection == 2,
-                    onTap: () => setState(() { _selectedSection = 2; _savedSection = -1; }),
-                  ),
+                  Icon(Icons.settings, color: Colors.white70),
+                  const SizedBox(width: 8),
+                  const Text('Settings', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
                 ],
               ),
               const SizedBox(height: 16),
-              // Section content
-              if (_selectedSection == 0) ...[
-                // Post section: upload pic, post, etc.
-                _PostSection(),
-              ] else if (_selectedSection == 1) ...[
-                // Calendar section
-                _CalendarSection(),
-              ] else if (_selectedSection == 2) ...[
-                // Saved section
-                if (_savedSection == -1)
-                  _SavedGrid(onTap: (idx) => setState(() { _savedSection = idx; }))
-                else if (_savedSection == 0)
-                  _SavedNotes(onBack: () => setState(() { _savedSection = -1; }))
-                else if (_savedSection == 1)
-                  _SavedVideos(onBack: () => setState(() { _savedSection = -1; }))
-                else if (_savedSection == 2)
-                  _SavedAR(onBack: () => setState(() { _savedSection = -1; }))
-              ],
-              const SizedBox(height: 24),
+              _drawerButton(context, Icons.person, 'Profile', () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen()));
+              }),
+              _drawerButton(context, Icons.lock, 'Passwords', () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const PasswordScreen()));
+              }),
+              _drawerSwitch(context, Icons.notifications, 'Notifications'),
+              _drawerButton(context, Icons.language, 'Languages', () {
+                Navigator.pop(context);
+                _showPlaceholder(context, 'Languages');
+              }),
+              _drawerButton(context, Icons.check_circle, 'Subscriptions', () {
+                Navigator.pop(context);
+                _showPlaceholder(context, 'Subscriptions');
+              }),
+              _drawerButton(context, Icons.help_outline, 'Help & Support', () {
+                Navigator.pop(context);
+                _showPlaceholder(context, 'Help & Support');
+              }),
+              _drawerButton(context, Icons.delete, 'Delete Account', () {
+                Navigator.pop(context);
+                _showPlaceholder(context, 'Delete Account');
+              }),
+              const Divider(height: 32, color: Colors.white12),
+              const Text('Login Activity', style: TextStyle(color: Colors.white70)),
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Add Account pressed')));
+                },
+                child: const Text('Add Account', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+              ),
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Logged out')));
+                },
+                child: const Text('Log out', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
       ),
     );
   }
-}
 
-class _StatItem extends StatelessWidget {
-  final String label;
-  final String value;
-  const _StatItem({required this.label, required this.value});
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 16.0),
+  Widget _drawerButton(BuildContext context, IconData icon, String label, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
       child: Column(
         children: [
-          Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+          Row(
+            children: [
+              Icon(icon, color: Colors.white70),
+              const SizedBox(width: 16),
+              Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(height: 1, color: Colors.white12),
+          const SizedBox(height: 12),
         ],
       ),
     );
   }
-}
 
-class _BadgeItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-  const _BadgeItem({required this.icon, required this.label, required this.color});
-  @override
-  Widget build(BuildContext context) {
+  Widget _drawerSwitch(BuildContext context, IconData icon, String label) {
     return Column(
       children: [
-        CircleAvatar(
-          backgroundColor: color.withOpacity(0.2),
-          child: Icon(icon, color: color),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: Colors.white70),
+                const SizedBox(width: 16),
+                Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+              ],
+            ),
+            Switch(
+              value: false,
+              onChanged: (v) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Notifications ${v ? 'enabled' : 'disabled'}')));
+              },
+              activeColor: Colors.white,
+              inactiveTrackColor: Colors.white24,
+            ),
+          ],
         ),
-        const SizedBox(height: 4),
-        Text(label, textAlign: TextAlign.center, style: TextStyle(color: color, fontSize: 12)),
+        const SizedBox(height: 12),
+        Container(height: 1, color: Colors.white12),
+        const SizedBox(height: 12),
       ],
     );
   }
-}
 
-// Update _ProfileButton to look and behave like a button with color change
-class _ProfileButton extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-  const _ProfileButton({required this.label, required this.selected, required this.onTap});
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
+  void _showPlaceholder(BuildContext context, String label) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$label screen (placeholder)')));
+  }
+
+  Widget _buildSectionTabs() {
+    return Row(
+      children: [
+        Expanded(child: _buildTabButton('Posts', 0)),
+        Expanded(child: _buildTabButton('Calendar', 1)),
+        Expanded(child: _buildTabButton('Saved', 2)),
+      ],
+    );
+  }
+
+  Widget _buildTabButton(String title, int index) {
+    final isSelected = _selectedSection == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedSection = index;
+          _savedSection = -1;
+        });
+      },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-            padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: selected ? const Color(0xFFB39DDB) : const Color(0xFFBDBDBD),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: selected ? const Color(0xFF7C4DFF) : Colors.transparent,
-              width: selected ? 2 : 1,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: selected ? Colors.white : Colors.purple,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF536DFE) : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          title,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.white70,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
       ),
     );
   }
-}
 
-// --- Post Section ---
-class _PostSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text('Upload your picture or post here!', style: TextStyle(color: Colors.white)),
-        const SizedBox(height: 16),
-        ElevatedButton.icon(
-          icon: const Icon(Icons.upload, color: Colors.white),
-          label: const Text('Upload Picture', style: TextStyle(color: Colors.white)),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.purple),
-          onPressed: () {},
-        ),
-        const SizedBox(height: 16),
-        Container(
-          height: 120,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white10,
-            borderRadius: BorderRadius.circular(12),
+  Widget _buildSectionContent() {
+    switch (_selectedSection) {
+      case 0:
+        // More posts, scrollable
+        final posts = List.generate(12, (i) {
+          final titles = [
+            'INTEGRAL CALCULUS', 'SOLID STATE', 'KINEMATICS', 'AMINES',
+            'THERMODYNAMICS', 'ELECTROCHEMISTRY', 'ATOMIC STRUCTURE', 'POLYMERS',
+            'ORGANIC CHEMISTRY', 'INORGANIC CHEMISTRY', 'PHYSICS', 'BIOLOGY'
+          ];
+          final colors = [
+            Colors.deepPurple, Colors.blue, Colors.indigo, Colors.amber,
+            Colors.red, Colors.green, Colors.teal, Colors.pink,
+            Colors.orange, Colors.cyan, Colors.purple, Colors.lime
+          ];
+          return {
+            'title': titles[i % titles.length],
+            'desc': 'Learn to find areas and reverse derivatives using integrals.',
+            'color': colors[i % colors.length],
+          };
+        });
+        final width = MediaQuery.of(context).size.width;
+        final crossAxisCount = width < 600 ? 2 : 4;
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.7,
+          child: GridView.builder(
+            padding: const EdgeInsets.only(bottom: 16),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              childAspectRatio: 0.95,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
+            itemCount: posts.length,
+            itemBuilder: (context, i) {
+              final post = posts[i];
+              return Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF23243A),
+                  border: Border.all(color: post['color'] as Color, width: 2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.image, size: 32, color: Colors.white30),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      post['title'] as String,
+                      style: TextStyle(
+                        color: post['color'] as Color,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      post['desc'] as String,
+                      style: const TextStyle(color: Colors.white70, fontSize: 11),
+                    ),
+                    const Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: const [
+                            Icon(Icons.people, color: Colors.white54, size: 16),
+                            SizedBox(width: 2),
+                            Text('11', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                          ],
+                        ),
+                        Row(
+                          children: const [
+                            Icon(Icons.emoji_events, color: Colors.white54, size: 16),
+                            SizedBox(width: 2),
+                            Text('19/25', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF536DFE),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        onPressed: () {},
+                        child: const Text('TAKE TEST', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
-          child: const Center(child: Icon(Icons.image, color: Colors.white30, size: 60)),
-        ),
-      ],
-    );
-  }
-}
-
-// --- Calendar Section ---
-class _CalendarSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final today = DateTime.now();
-    final year = 2025;
-    final month = 5;
-    final daysInMonth = DateUtils.getDaysInMonth(year, month);
-    final firstDayOfWeek = DateTime(year, month, 1).weekday % 7; // 0=Sun, 6=Sat
-    final List<Widget> dayWidgets = [];
-    // Add empty widgets for days before the 1st
-    for (int i = 0; i < firstDayOfWeek; i++) {
-      dayWidgets.add(const SizedBox());
-    }
-    // Add day numbers
-    for (int d = 1; d <= daysInMonth; d++) {
-      dayWidgets.add(_CalendarDay(
-        day: d,
-        isToday: year == today.year && month == today.month && d == today.day,
-        isSelected: d == 29, // Example: 29th is selected as in screenshot
-      ));
-    }
-    // Fill the last row with empty widgets if needed
-    while (dayWidgets.length % 7 != 0) {
-      dayWidgets.add(const SizedBox());
-    }
-    return Column(
-      children: [
-        Container(
+        );
+      case 1:
+        return Container(
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF18192B),
+            color: const Color(0xFF23243A),
             borderRadius: BorderRadius.circular(16),
           ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
+          child: const Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text('May 2025', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                  Icon(Icons.chevron_right, color: Colors.white),
-                ],
+              Text(
+                'Calendar View',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  _CalendarWeekday('S'),
-                  _CalendarWeekday('M'),
-                  _CalendarWeekday('T'),
-                  _CalendarWeekday('W'),
-                  _CalendarWeekday('T'),
-                  _CalendarWeekday('F'),
-                  _CalendarWeekday('S'),
-                ],
-              ),
-              const SizedBox(height: 4),
-              GridView.count(
-                crossAxisCount: 7,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: dayWidgets,
+              SizedBox(height: 16),
+              Text(
+                'Calendar functionality coming soon...',
+                style: TextStyle(color: Colors.white70),
               ),
             ],
           ),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFF35345A),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: const Center(
-            child: Text('Month: May', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _CalendarWeekday extends StatelessWidget {
-  final String label;
-  const _CalendarWeekday(this.label);
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-        child: Text(label, style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
-      ),
-    );
-  }
-}
-
-class _CalendarDay extends StatelessWidget {
-  final int day;
-  final bool isToday;
-  final bool isSelected;
-  const _CalendarDay({required this.day, this.isToday = false, this.isSelected = false});
-  @override
-  Widget build(BuildContext context) {
-    Color bgColor = Colors.transparent;
-    Color textColor = Colors.white;
-    if (isSelected) {
-      bgColor = const Color(0xFF7C4DFF);
-      textColor = Colors.white;
-    } else if (isToday) {
-      bgColor = Colors.white24;
-      textColor = Colors.white;
+        );
+      case 2:
+        if (_savedSection == -1) {
+          return _SavedGrid(onTap: (index) {
+            setState(() {
+              _savedSection = index;
+            });
+          });
+        } else {
+          return _SavedContent(
+            section: _savedSection,
+            onBack: () {
+              setState(() {
+                _savedSection = -1;
+              });
+            },
+          );
+        }
+      default:
+        return const SizedBox();
     }
-    return Container(
-      margin: const EdgeInsets.all(2),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Center(
-        child: Text('$day', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
-      ),
-    );
   }
 }
 
-// --- Saved Section ---
 class _SavedGrid extends StatelessWidget {
   final void Function(int) onTap;
   const _SavedGrid({required this.onTap});
+
   @override
   Widget build(BuildContext context) {
     return GridView.count(
@@ -451,22 +536,22 @@ class _SavedGrid extends StatelessWidget {
           onTap: () => onTap(0),
         ),
         _SavedTile(
-          color: Colors.yellow.shade100,
+          color: Colors.amber.shade100,
           icon: Icons.ondemand_video,
           label: 'Videos',
           onTap: () => onTap(1),
         ),
         _SavedTile(
-          color: Colors.pink.shade100,
-          icon: Icons.podcasts,
-          label: 'Podcasts',
-          onTap: () {},
-        ),
-        _SavedTile(
           color: Colors.cyan.shade100,
           icon: Icons.view_in_ar,
-          label: 'AR',
+          label: 'AR/VR',
           onTap: () => onTap(2),
+        ),
+        _SavedTile(
+          color: Colors.pink.shade100,
+          icon: Icons.podcasts,
+          label: 'Podcast',
+          onTap: () => onTap(3),
         ),
       ],
     );
@@ -479,6 +564,7 @@ class _SavedTile extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   const _SavedTile({required this.color, required this.icon, required this.label, required this.onTap});
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -491,9 +577,9 @@ class _SavedTile extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 48, color: Colors.black54),
+            Icon(icon, size: 40, color: Colors.black54),
             const SizedBox(height: 8),
-            Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black87)),
+            Text(label, style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -501,373 +587,59 @@ class _SavedTile extends StatelessWidget {
   }
 }
 
-class _SavedNotes extends StatelessWidget {
+class _SavedContent extends StatelessWidget {
+  final int section;
   final VoidCallback onBack;
-  const _SavedNotes({required this.onBack});
+  const _SavedContent({required this.section, required this.onBack});
+
   @override
   Widget build(BuildContext context) {
+    final titles = ['Notes', 'Videos', 'AR/VR', 'Podcast'];
+    final colors = [Colors.blue, Colors.amber, Colors.cyan, Colors.pink];
+    final icons = [Icons.description, Icons.ondemand_video, Icons.view_in_ar, Icons.podcasts];
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             IconButton(icon: const Icon(Icons.arrow_back, color: Colors.white), onPressed: onBack),
-            const Text('Notes', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22)),
+            Text(titles[section], style: TextStyle(color: colors[section], fontWeight: FontWeight.bold, fontSize: 22)),
             const SizedBox(width: 8),
-            const Icon(Icons.description, color: Colors.white, size: 28),
+            Icon(icons[section], color: colors[section], size: 28),
           ],
         ),
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 0.9,
-          children: List.generate(6, (index) => _NoteCard()),
+        const SizedBox(height: 16),
+        Center(
+          child: Text(
+            'No saved ${titles[section].toLowerCase()} yet',
+            style: const TextStyle(color: Colors.white70, fontSize: 16),
+          ),
         ),
       ],
     );
   }
 }
 
-class _NoteCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF23243A),
-        border: Border.all(color: Colors.blueAccent, width: 2),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.white24,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              child: const Center(child: Icon(Icons.image, size: 32, color: Colors.white30)),
-            ),
-            const SizedBox(height: 8),
-            const Text('INTEGRAL CALCULUS', style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 2),
-            const Text('Learn to find areas and reverse derivatives using integrals.', style: TextStyle(color: Colors.white70, fontSize: 11)),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: const [
-                    Icon(Icons.file_copy, color: Colors.white54, size: 16),
-                    SizedBox(width: 2),
-                    Icon(Icons.volume_up, color: Colors.white54, size: 16),
-                  ],
-                ),
-                const Icon(Icons.bookmark, color: Colors.white54, size: 16),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SavedVideos extends StatelessWidget {
-  final VoidCallback onBack;
-  const _SavedVideos({required this.onBack});
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            IconButton(icon: const Icon(Icons.arrow_back, color: Colors.white), onPressed: onBack),
-            const Text('Videos', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 22)),
-            const SizedBox(width: 8),
-            const Icon(Icons.ondemand_video, color: Colors.amber, size: 28),
-          ],
-        ),
-        Column(
-          children: List.generate(3, (index) => _VideoCard()),
-        ),
-      ],
-    );
-  }
-}
-
-class _VideoCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF23243A),
-        border: Border.all(color: Colors.amber, width: 2),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.white24,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                Positioned(
-                  right: 4,
-                  top: 4,
-                  child: Icon(Icons.volume_off, color: Colors.white, size: 18),
-                ),
-                Positioned(
-                  left: 4,
-                  bottom: 4,
-                  child: Icon(Icons.bookmark, color: Colors.amber, size: 18),
-                ),
-                Positioned(
-                  right: 8,
-                  bottom: 4,
-                  child: Text('15.30', style: TextStyle(color: Colors.white, fontSize: 12)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            const Text('Dive into the fascinating world of physics, starting with the foundation............', style: TextStyle(color: Colors.white70, fontSize: 11)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SavedAR extends StatelessWidget {
-  final VoidCallback onBack;
-  const _SavedAR({required this.onBack});
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            IconButton(icon: const Icon(Icons.arrow_back, color: Colors.white), onPressed: onBack),
-            const Text('AR/VR', style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold, fontSize: 22)),
-            const SizedBox(width: 8),
-            const Icon(Icons.view_in_ar, color: Colors.cyan, size: 28),
-          ],
-        ),
-        Column(
-          children: List.generate(3, (index) => _ARCard()),
-        ),
-      ],
-    );
-  }
-}
-
-class _ARCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-      color: const Color(0xFF23243A),
-        border: Border.all(color: Colors.cyan, width: 2),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 60,
-              decoration: BoxDecoration(
-                color: Colors.white24,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Center(child: Icon(Icons.view_in_ar, size: 32, color: Colors.white30)),
-            ),
-            const SizedBox(height: 8),
-            const Text('Topic Name', style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SettingsOptionsPanel extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF23243A),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          _SettingsTile(
-            icon: Icons.person_outline,
-            label: 'Profile',
-            onTap: () {},
-          ),
-          _SettingsTile(
-            icon: Icons.lock_outline,
-            label: 'Passwords',
-            onTap: () {},
-          ),
-          _SettingsTile(
-            icon: Icons.notifications_none,
-            label: 'Notifications',
-            trailing: Switch(value: true, onChanged: (v) {}),
-            onTap: () {},
-          ),
-          _SettingsTile(
-            icon: Icons.language,
-            label: tr('languages'),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const LanguageSelectionPage()),
-              );
-            },
-          ),
-          _SettingsTile(
-            icon: Icons.check_circle_outline,
-            label: 'Subscriptions',
-            onTap: () {},
-          ),
-          _SettingsTile(
-            icon: Icons.help_outline,
-            label: 'Help & Support',
-            onTap: () {},
-          ),
-          _SettingsTile(
-            icon: Icons.delete_outline,
-            label: 'Delete Account',
-            onTap: () {},
-          ),
-          const Divider(color: Colors.blueGrey, height: 1),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Login Activity', style: TextStyle(color: Colors.white70, fontSize: 14)),
-                const SizedBox(height: 4),
-                GestureDetector(
-                  onTap: () {},
-                  child: const Text('Add Account', style: TextStyle(color: Colors.blueAccent, fontSize: 15, fontWeight: FontWeight.w500)),
-                ),
-                const SizedBox(height: 2),
-                GestureDetector(
-                  onTap: () {},
-                  child: const Text('Log out', style: TextStyle(color: Colors.redAccent, fontSize: 15, fontWeight: FontWeight.w500)),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SettingsTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Widget? trailing;
-  final VoidCallback onTap;
-  const _SettingsTile({required this.icon, required this.label, this.trailing, required this.onTap});
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Color(0xFF374151), width: 1),
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: Colors.white, size: 22),
-            const SizedBox(width: 18),
-            Expanded(
-              child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
-            ),
-            if (trailing != null) trailing!,
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class LanguageSelectionPage extends StatelessWidget {
-  const LanguageSelectionPage({super.key});
+class EditProfileScreen extends StatelessWidget {
+  const EditProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final currentLocale = context.locale;
     return Scaffold(
+      backgroundColor: const Color(0xFF23243A),
       appBar: AppBar(
-        title: Text(tr('languages')),
         backgroundColor: const Color(0xFF23243A),
+        elevation: 0,
+        title: const Text('Edit Profile', style: TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      backgroundColor: const Color(0xFF23243A),
-      body: Padding(
-        padding: const EdgeInsets.all(32.0),
+      body: const Padding(
+        padding: EdgeInsets.all(24.0),
         child: Center(
-          child: Wrap(
-            spacing: 24,
-            runSpacing: 24,
-            children: [
-              _LanguageOption(
-                label: 'Hindi',
-                selected: currentLocale.languageCode == 'hi',
-                onTap: () async {
-                  await context.setLocale(const Locale('hi'));
-                  Navigator.of(context).pop();
-                },
-              ),
-              _LanguageOption(
-                label: 'English',
-                selected: currentLocale.languageCode == 'en',
-                onTap: () async {
-                  await context.setLocale(const Locale('en'));
-                  Navigator.of(context).pop();
-                },
-              ),
-              _LanguageOption(
-                label: 'Marathi',
-                selected: currentLocale.languageCode == 'mr',
-                onTap: () async {
-                  await context.setLocale(const Locale('mr'));
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+          child: Text(
+            'Edit Profile functionality coming soon...',
+            style: TextStyle(color: Colors.white70, fontSize: 16),
           ),
         ),
       ),
@@ -875,43 +647,221 @@ class LanguageSelectionPage extends StatelessWidget {
   }
 }
 
-class _LanguageOption extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-  const _LanguageOption({required this.label, required this.selected, required this.onTap});
+class PasswordScreen extends StatefulWidget {
+  const PasswordScreen({super.key});
+
+  @override
+  State<PasswordScreen> createState() => _PasswordScreenState();
+}
+
+class _PasswordScreenState extends State<PasswordScreen> {
+  final _currentController = TextEditingController();
+  final _newController = TextEditingController();
+  final _confirmController = TextEditingController();
+  bool _logoutAll = false;
+  bool _loading = false;
+  bool _showCurrent = false;
+  bool _showNew = false;
+  bool _showConfirm = false;
+
+  void _showDialog(bool success) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(success ? Icons.check_circle : Icons.cancel,
+                    color: success ? Colors.green : Colors.red, size: 32),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    success ? 'Password changed successfully' : 'Incorrect Password',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    Future.delayed(const Duration(seconds: 2), () {
+      Navigator.of(context, rootNavigator: true).pop();
+      if (success) Navigator.pop(context);
+    });
+  }
+
+  void _changePassword() {
+    setState(() => _loading = true);
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() => _loading = false);
+      // Demo logic: password must be at least 6 chars and new == confirm
+      if (_currentController.text == '123456' &&
+          _newController.text.length >= 6 &&
+          _newController.text == _confirmController.text) {
+        _showDialog(true);
+      } else {
+        _showDialog(false);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 120,
-        height: 80,
-        decoration: BoxDecoration(
-          color: selected ? const Color(0xFF536DFE) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: selected ? const Color(0xFF536DFE) : Colors.grey.shade300,
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
+    return Scaffold(
+      backgroundColor: const Color(0xFF23243A),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF23243A),
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text('Passwords', style: TextStyle(color: Colors.white)),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Change Password',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Your Password must be at least 6 characters and should include a combination of numbers , letters and special Characters (!@#\$)',
+              style: TextStyle(color: Colors.white70, fontSize: 13),
+            ),
+            const SizedBox(height: 24),
+            _buildTextField('Current Password', _currentController, !_showCurrent, () {
+              setState(() => _showCurrent = !_showCurrent);
+            }),
+            const SizedBox(height: 16),
+            _buildTextField('New Password', _newController, !_showNew, () {
+              setState(() => _showNew = !_showNew);
+            }),
+            const SizedBox(height: 16),
+            _buildTextField('Confirm Password', _confirmController, !_showConfirm, () {
+              setState(() => _showConfirm = !_showConfirm);
+            }),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {},
+                child: const Text('Forgot Your Password?', style: TextStyle(color: Colors.blue)),
+              ),
+            ),
+            Row(
+              children: [
+                Checkbox(
+                  value: _logoutAll,
+                  onChanged: (v) => setState(() => _logoutAll = v ?? false),
+                  activeColor: Colors.blue,
+                ),
+                const Text('Log out from all devices', style: TextStyle(color: Colors.white)),
+              ],
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF536DFE),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                onPressed: _loading ? null : _changePassword,
+                child: _loading
+                    ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : const Text('Change Password', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
             ),
           ],
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style: TextStyle(
-            color: selected ? Colors.white : Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
         ),
       ),
     );
   }
+
+  Widget _buildTextField(String label, TextEditingController controller, bool obscure, VoidCallback toggle) {
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.white70),
+        filled: true,
+        fillColor: const Color(0xFF23243A),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.white24),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.blue),
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: Colors.white24),
+          onPressed: toggle,
+        ),
+      ),
+    );
+  }
+}
+
+
+// Helper for menu option
+Widget menuOption(IconData icon, String label) {
+  return Column(
+    children: [
+      Row(
+        children: [
+          Icon(icon, color: Colors.white70),
+          const SizedBox(width: 16),
+          Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+        ],
+      ),
+      const SizedBox(height: 12),
+      Container(height: 1, color: Colors.white12),
+      const SizedBox(height: 12),
+    ],
+  );
+}
+
+// Helper for menu option with switch
+Widget menuOptionSwitch(IconData icon, String label) {
+  return Column(
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: Colors.white70),
+              const SizedBox(width: 16),
+              Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            ],
+          ),
+          Switch(
+            value: false,
+            onChanged: (v) {},
+            activeColor: Colors.white,
+            inactiveTrackColor: Colors.white24,
+          ),
+        ],
+      ),
+      const SizedBox(height: 12),
+      Container(height: 1, color: Colors.white12),
+      const SizedBox(height: 12),
+    ],
+  );
 }

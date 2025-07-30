@@ -26,7 +26,7 @@ class AppTheme {
       titleLarge: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
     ),
     checkboxTheme: CheckboxThemeData(
-      fillColor: MaterialStateProperty.all(Colors.purpleAccent),
+      fillColor: WidgetStateProperty.all(Colors.purpleAccent),
     ),
     iconTheme: const IconThemeData(color: Colors.white),
   );

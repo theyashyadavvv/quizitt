@@ -1,4 +1,3 @@
-import 'package:ecommerce/features/auth/presentation/pages/onboarding_page.dart';
 import 'package:flutter/material.dart';
 import '../../../home/pages/home_page.dart';
 import '../widgets/option_button.dart';
